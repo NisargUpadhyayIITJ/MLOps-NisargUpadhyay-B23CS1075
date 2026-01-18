@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 1 - MLOps Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="gradient-bg"></div>
+
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <span class="logo-icon">🚀</span>
+                <span>MLOps Portfolio</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="#results">Results</a>
+                <a href="#notebooks">Notebooks</a>
+                <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
+                    target="_blank">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" style="padding-bottom: 3rem;">
+            <div class="container">
+                <a href="index.html" class="back-link">← Back to Portfolio</a>
+                <h1>Assignment 1</h1>
+                <p class="subtitle">Deep Learning & SVM Classification on MNIST & FashionMNIST</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>📋 Overview</h2>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <h4>Objective</h4>
+                        <p>Train ResNet-18, ResNet-50 and SVM classifiers with various hyperparameters on MNIST and
+                            FashionMNIST datasets.</p>
+                    </div>
+                    <div class="overview-card">
+                        <h4>Key Tasks</h4>
+                        <ul>
+                            <li>Q1(a): Deep learning classification with ResNet</li>
+                            <li>Q1(b): SVM classification with poly & rbf kernels</li>
+                            <li>Q2: CPU vs GPU performance analysis</li>
+                        </ul>
+                    </div>
+                    <div class="overview-card">
+                        <h4>Technologies</h4>
+                        <div class="tech-stack">
+                            <span class="tech">PyTorch</span>
+                            <span class="tech">CUDA</span>
+                            <span class="tech">Scikit-learn</span>
+                            <span class="tech">AMP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="section">
+            <div class="container">
+                <h2>📊 Key Results</h2>
+
+                <!-- Best Results Cards -->
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-icon">🎯</div>
+                        <div class="result-value">99.20%</div>
+                        <div class="result-label">Best MNIST (ResNet-18)</div>
+                        <div class="result-details">B16, SGD, LR=0.001</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-icon">👕</div>
+                        <div class="result-value">92.60%</div>
+                        <div class="result-label">Best FashionMNIST (ResNet-50)</div>
+                        <div class="result-details">B16, Adam, LR=0.0001</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-icon">⚡</div>
+                        <div class="result-value">97.61%</div>
+                        <div class="result-label">Best SVM MNIST</div>
+                        <div class="result-details">poly kernel, C=10.0</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-icon">🚀</div>
+                        <div class="result-value">30x</div>
+                        <div class="result-label">GPU Speedup</div>
+                        <div class="result-details">vs CPU training</div>
+                    </div>
+                </div>
+
+                <!-- Q1(a) Results Table -->
+                <div class="table-section">
+                    <h3>Q1(a) Deep Learning Results - MNIST</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Batch Size</th>
+                                    <th>Optimizer</th>
+                                    <th>Learning Rate</th>
+                                    <th>ResNet-18 (%)</th>
+                                    <th>ResNet-50 (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight-row">
+                                    <td>16</td>
+                                    <td>SGD</td>
+                                    <td>0.001</td>
+                                    <td class="best">99.20</td>
+                                    <td>99.11</td>
+                                </tr>
+                                <tr>
+                                    <td>16</td>
+                                    <td>SGD</td>
+                                    <td>0.0001</td>
+                                    <td>97.70</td>
+                                    <td>97.27</td>
+                                </tr>
+                                <tr>
+                                    <td>16</td>
+                                    <td>Adam</td>
+                                    <td>0.001</td>
+                                    <td>98.19</td>
+                                    <td>98.46</td>
+                                </tr>
+                                <tr>
+                                    <td>16</td>
+                                    <td>Adam</td>
+                                    <td>0.0001</td>
+                                    <td>99.15</td>
+                                    <td>98.24</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>SGD</td>
+                                    <td>0.001</td>
+                                    <td>98.95</td>
+                                    <td>98.67</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>SGD</td>
+                                    <td>0.0001</td>
+                                    <td>96.59</td>
+                                    <td>94.21</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>Adam</td>
+                                    <td>0.001</td>
+                                    <td>98.96</td>
+                                    <td>98.75</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>Adam</td>
+                                    <td>0.0001</td>
+                                    <td>98.71</td>
+                                    <td>98.02</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="table-note">* Results with pin_memory=True, Epochs=5</p>
+                </div>
+
+                <!-- Q1(a) FashionMNIST -->
+                <div class="table-section">
+                    <h3>Q1(a) Deep Learning Results - FashionMNIST</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Batch Size</th>
+                                    <th>Optimizer</th>
+                                    <th>Learning Rate</th>
+                                    <th>ResNet-18 (%)</th>
+                                    <th>ResNet-50 (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>16</td>
+                                    <td>SGD</td>
+                                    <td>0.001</td>
+                                    <td>92.06</td>
+                                    <td>91.97</td>
+                                </tr>
+                                <tr>
+                                    <td>16</td>
+                                    <td>SGD</td>
+                                    <td>0.0001</td>
+                                    <td>90.41</td>
+                                    <td>89.63</td>
+                                </tr>
+                                <tr>
+                                    <td>16</td>
+                                    <td>Adam</td>
+                                    <td>0.001</td>
+                                    <td>92.11</td>
+                                    <td>89.11</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>16</td>
+                                    <td>Adam</td>
+                                    <td>0.0001</td>
+                                    <td>92.43</td>
+                                    <td class="best">92.60</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>SGD</td>
+                                    <td>0.001</td>
+                                    <td>90.59</td>
+                                    <td>89.71</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>SGD</td>
+                                    <td>0.0001</td>
+                                    <td>88.86</td>
+                                    <td>85.04</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>Adam</td>
+                                    <td>0.001</td>
+                                    <td>91.12</td>
+                                    <td>50.81</td>
+                                </tr>
+                                <tr>
+                                    <td>32</td>
+                                    <td>Adam</td>
+                                    <td>0.0001</td>
+                                    <td>92.06</td>
+                                    <td>92.43</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="table-note">* Results with pin_memory=False, Epochs=10</p>
+                </div>
+
+                <!-- Q1(b) SVM Results -->
+                <div class="table-section">
+                    <h3>Q1(b) SVM Classification Results</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dataset</th>
+                                    <th>Kernel</th>
+                                    <th>C</th>
+                                    <th>Accuracy (%)</th>
+                                    <th>Train Time (ms)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight-row">
+                                    <td>MNIST</td>
+                                    <td>poly</td>
+                                    <td>10.0</td>
+                                    <td class="best">97.61</td>
+                                    <td>286,093</td>
+                                </tr>
+                                <tr>
+                                    <td>MNIST</td>
+                                    <td>rbf</td>
+                                    <td>10.0</td>
+                                    <td>96.99</td>
+                                    <td>368,092</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>FashionMNIST</td>
+                                    <td>rbf</td>
+                                    <td>10.0</td>
+                                    <td class="best">89.89</td>
+                                    <td>479,740</td>
+                                </tr>
+                                <tr>
+                                    <td>FashionMNIST</td>
+                                    <td>poly</td>
+                                    <td>10.0</td>
+                                    <td>89.84</td>
+                                    <td>367,438</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Q2 CPU vs GPU -->
+                <div class="table-section">
+                    <h3>Q2 CPU vs GPU Performance (FashionMNIST)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Compute</th>
+                                    <th>Model</th>
+                                    <th>Accuracy (%)</th>
+                                    <th>Train Time (ms)</th>
+                                    <th>FLOPs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge-gpu">GPU</span></td>
+                                    <td>ResNet-18</td>
+                                    <td>87.24</td>
+                                    <td class="fast">62,192</td>
+                                    <td>1.824G</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge-cpu">CPU</span></td>
+                                    <td>ResNet-18</td>
+                                    <td>87.40</td>
+                                    <td>1,149,299</td>
+                                    <td>1.824G</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge-gpu">GPU</span></td>
+                                    <td>ResNet-50</td>
+                                    <td>85.69</td>
+                                    <td class="fast">137,549</td>
+                                    <td>4.132G</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge-cpu">CPU</span></td>
+                                    <td>ResNet-50</td>
+                                    <td>83.47</td>
+                                    <td>4,234,740</td>
+                                    <td>4.132G</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="notebooks" class="section">
+            <div class="container">
+                <h2>📓 Colab Notebooks</h2>
+                <div class="notebooks-grid">
+                    <a href="https://colab.research.google.com/drive/1-3agnpflxnU_hf_g7Wbe6ltnSeutNw2f?usp=sharing"
+                        target="_blank" class="notebook-card">
+                        <div class="notebook-icon">🧠</div>
+                        <h4>Deep Learning Notebook</h4>
+                        <p>ResNet-18, ResNet-50 training on MNIST & FashionMNIST with hyperparameter tuning</p>
+                        <span class="notebook-link">Open in Colab →</span>
+                    </a>
+                    <a href="https://colab.research.google.com/drive/14oD_n-gdJ2UhbP2VbSXAfVhBiyGsc8Dh?usp=sharing"
+                        target="_blank" class="notebook-card">
+                        <div class="notebook-icon">📊</div>
+                        <h4>SVM Notebook</h4>
+                        <p>SVM classification with polynomial and RBF kernels</p>
+                        <span class="notebook-link">Open in Colab →</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>📈 Key Insights</h2>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4>🎯 Optimizer Choice</h4>
+                        <p>SGD with LR=0.001 provides best results for quick convergence. Adam with lower LR (0.0001)
+                            offers more stable training.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>📦 Batch Size Impact</h4>
+                        <p>Smaller batch size (16) consistently yields better accuracy. Larger batches train faster but
+                            may require LR tuning.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>⚡ GPU Acceleration</h4>
+                        <p>GPU provides 18-30x speedup. Larger models benefit more from GPU parallelization.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>🔄 Model Selection</h4>
+                        <p>ResNet-18 is sufficient for MNIST. ResNet-50 provides marginal improvements on FashionMNIST
+                            with higher compute cost.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Nisarg Upadhyay | B23CS1075 | IIT Jodhpur</p>
+        </div>
+    </footer>
+
+    <style>
+        .back-link {
+            display: inline-block;
+            color: var(--primary-light);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            padding: 3rem 0;
+        }
+
+        .section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .overview-grid,
+        .results-grid,
+        .notebooks-grid,
+        .insights-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .overview-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .results-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            margin-bottom: 3rem;
+        }
+
+        .notebooks-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .insights-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .overview-card,
+        .insight-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .overview-card h4,
+        .insight-card h4 {
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .overview-card p,
+        .overview-card ul,
+        .insight-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .overview-card ul {
+            padding-left: 1.25rem;
+        }
+
+        .overview-card li {
+            margin-bottom: 0.25rem;
+        }
+
+        .result-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: var(--text);
+            margin-top: 0.25rem;
+        }
+
+        .result-details {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .table-section {
+            margin-bottom: 2rem;
+        }
+
+        .table-section h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--surface-light);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        td {
+            font-size: 0.875rem;
+        }
+
+        .highlight-row {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .best {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .fast {
+            color: var(--secondary);
+        }
+
+        .badge-gpu {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-cpu {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .table-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+            font-style: italic;
+        }
+
+        .notebook-card {
+            display: block;
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .notebook-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .notebook-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .notebook-card h4 {
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .notebook-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .notebook-link {
+            color: var(--primary-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+    </style>
+</body>
+
+</html>
