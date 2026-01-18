@@ -2,7 +2,14 @@
 
 ---
 
-## 📋 Table of Contents
+## Colab Links
+
+- **Deep Learning Notebook:** [MLOps_Assignment1_DeepLearning.ipynb](https://colab.research.google.com/github/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/blob/Assignment-1/MLOps_Assignment1_DeepLearning.ipynb)
+- **SVM Notebook:** [MLOps_Assignment1_SVM.ipynb](https://colab.research.google.com/github/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/blob/Assignment-1/MLOps_Assignment1_SVM.ipynb)
+
+---
+
+## Table of Contents
 
 1. [Assignment Overview](#assignment-overview)
 2. [Q1(a) - Deep Learning Classification Results](#q1a---deep-learning-classification-results)
@@ -316,13 +323,6 @@ The best model weights are saved in: `MLOps_Assignment1_DeepLearning/best_model.
 |:-------------|:------|
 | SVM Performance Analysis | ![](MLOps_Assignment1_SVM/Q1b_SVM_Analysis.png) |
 | Best SVM Confusion Matrix | ![](MLOps_Assignment1_SVM/Q1b_Best_SVM_Confusion_Matrix.png) |
-
----
-
-## Colab Links
-
-- **Deep Learning Notebook:** [MLOps_Assignment1_DeepLearning.ipynb](https://colab.research.google.com/github/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/blob/Assignment-1/MLOps_Assignment1_DeepLearning.ipynb)
-- **SVM Notebook:** [MLOps_Assignment1_SVM.ipynb](https://colab.research.google.com/github/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/blob/Assignment-1/MLOps_Assignment1_SVM.ipynb)
 
 ---
 
