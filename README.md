@@ -9,7 +9,7 @@
 
 ---
 
-## Repo Site 
+## Repo Site
 
 - **Link:** https://nisargupadhyayiitj.github.io/MLOps-NisargUpadhyay-B23CS1075/ 
 
