@@ -1,6 +1,4 @@
-# MLOps-NisargUpadhyay-B23CS1075
-
-## MLOps Assignment-1
+# MLOps Assignment-1
 
 ---
 
