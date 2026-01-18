@@ -1,9 +1,6 @@
 # MLOps-NisargUpadhyay-B23CS1075
 
-## DLOPs Assignment-1
-
-**Name:** Nisarg Upadhyay  
-**Roll Number:** B23CS1075
+## MLOps Assignment-1
 
 ---
 
@@ -229,15 +226,6 @@ This assignment involves training deep learning models (ResNet-18, ResNet-32, Re
 | CPU | 16 | SGD | 0.001 | 87.40 | 21.42 | 83.47 | 1,149,298.96 | 4,602,191.18 | 4,234,739.54 | 1.824G | 3.449G | 4.132G |
 | CPU | 16 | Adam | 0.001 | 78.41 | 27.52 | 82.77 | 1,080,025.03 | 4,696,243.79 | 4,151,351.14 | 1.824G | 3.449G | 4.132G |
 
-#### Extended Training (10 epochs)
-
-| Compute | Batch Size | Optimizer | LR | ResNet-18 Acc (%) | ResNet-32 Acc (%) | ResNet-50 Acc (%) | ResNet-18 Time (ms) | ResNet-32 Time (ms) | ResNet-50 Time (ms) | ResNet-18 FLOPs | ResNet-32 FLOPs | ResNet-50 FLOPs |
-|:-------:|:----------:|:---------:|:--:|:-----------------:|:-----------------:|:-----------------:|:-------------------:|:-------------------:|:-------------------:|:---------------:|:---------------:|:---------------:|
-| CUDA | 16 | SGD | 0.001 | **91.23** | 35.81 | **91.29** | 300,904.45 | 847,027.99 | 609,898.94 | 1.824G | 3.449G | 4.132G |
-| CUDA | 16 | Adam | 0.001 | 90.38 | 10.65 | 89.47 | 294,351.74 | 854,504.04 | 688,280.77 | 1.824G | 3.449G | 4.132G |
-| CPU | 16 | SGD | 0.001 | **91.89** | 43.93 | **91.06** | 6,218,032.38 | 25,687,683.97 | 20,673,186.41 | 1.824G | 3.449G | 4.132G |
-| CPU | 16 | Adam | 0.001 | 90.34 | 41.83 | 88.07 | 5,438,881.32 | 25,835,262.65 | 20,797,974.71 | 1.824G | 3.449G | 4.132G |
-
 ### Q2 Analysis
 
 #### Key Findings:
@@ -362,17 +350,3 @@ MLOps-NisargUpadhyay-B23CS1075/
 ```
 
 ---
-
-## Summary
-
-This assignment demonstrated:
-
-1. **Deep Learning Excellence:** ResNet architectures achieve 99%+ accuracy on MNIST and 92%+ on FashionMNIST
-2. **Hyperparameter Sensitivity:** Learning rate, batch size, and optimizer choice significantly impact performance
-3. **GPU Advantage:** 20-35x speedup over CPU training, essential for practical deep learning
-4. **SVM Comparison:** Traditional ML methods achieve competitive results but are slower and less scalable
-5. **Model Selection:** ResNet-18 provides the best efficiency for these image classification tasks
-
----
-
-*Assignment completed by Nisarg Upadhyay (B23CS1075)*
