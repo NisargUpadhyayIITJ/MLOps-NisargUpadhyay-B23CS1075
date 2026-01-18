@@ -4,8 +4,8 @@
 
 ## Colab Links
 
-- **Deep Learning Notebook:** [MLOps_Assignment1_DeepLearning.ipynb](https://colab.research.google.com/github/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/blob/Assignment-1/MLOps_Assignment1_DeepLearning.ipynb)
-- **SVM Notebook:** [MLOps_Assignment1_SVM.ipynb](https://colab.research.google.com/github/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/blob/Assignment-1/MLOps_Assignment1_SVM.ipynb)
+- **Deep Learning Notebook:** [MLOps_Assignment1_DeepLearning.ipynb](https://colab.research.google.com/drive/1-3agnpflxnU_hf_g7Wbe6ltnSeutNw2f?usp=sharing)
+- **SVM Notebook:** [MLOps_Assignment1_SVM.ipynb](https://colab.research.google.com/drive/14oD_n-gdJ2UhbP2VbSXAfVhBiyGsc8Dh?usp=sharing)
 
 ---
 
