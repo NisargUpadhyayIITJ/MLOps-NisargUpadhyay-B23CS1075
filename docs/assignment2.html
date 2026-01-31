@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2 - MLOps Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="gradient-bg"></div>
+
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <span>Nisarg Upadhyay</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="#results">Results</a>
+                <a href="#visualizations">Visualizations</a>
+                <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
+                    target="_blank">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" style="padding-bottom: 3rem;">
+            <div class="container">
+                <a href="index.html" class="back-link">← Back to Home</a>
+                <h1>Assignment 2</h1>
+                <p class="subtitle">CNN Training on CIFAR-10 with Gradient & Weight Visualization</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Overview</h2>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <h4>Objective</h4>
+                        <p>Train a CNN on CIFAR-10 with custom dataloader, visualize gradient flow and weight updates
+                            using W&B.</p>
+                    </div>
+                    <div class="overview-card">
+                        <h4>Key Tasks</h4>
+                        <ul>
+                            <li>Custom CIFAR-10 DataLoader</li>
+                            <li>SimpleCNN model (~500K params)</li>
+                            <li>FLOPs counting with ptflops</li>
+                            <li>Gradient flow visualization</li>
+                            <li>Weight update tracking</li>
+                        </ul>
+                    </div>
+                    <div class="overview-card">
+                        <h4>Technologies</h4>
+                        <div class="tech-stack">
+                            <span class="tech">PyTorch</span>
+                            <span class="tech">W&B</span>
+                            <span class="tech">ptflops</span>
+                            <span class="tech">CUDA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="section">
+            <div class="container">
+                <h2>Model & Results</h2>
+
+                <!-- Model Summary Cards -->
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-value">SimpleCNN</div>
+                        <div class="result-label">Model Architecture</div>
+                        <div class="result-details">3 Conv Blocks + 2 FC Layers</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value">~500K</div>
+                        <div class="result-label">Parameters</div>
+                        <div class="result-details">Lightweight for fast training</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value">30</div>
+                        <div class="result-label">Epochs</div>
+                        <div class="result-details">With cosine annealing</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value">W&B</div>
+                        <div class="result-label">Logging</div>
+                        <div class="result-details">All visualizations tracked</div>
+                    </div>
+                </div>
+
+                <!-- Architecture Table -->
+                <div class="table-section">
+                    <h3>SimpleCNN Architecture</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Layer</th>
+                                    <th>Type</th>
+                                    <th>Output Shape</th>
+                                    <th>Parameters</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Input</td>
+                                    <td>-</td>
+                                    <td>3 × 32 × 32</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>Conv Block 1</td>
+                                    <td>Conv2d + BN + ReLU + MaxPool</td>
+                                    <td>32 × 16 × 16</td>
+                                    <td>~1K</td>
+                                </tr>
+                                <tr>
+                                    <td>Conv Block 2</td>
+                                    <td>Conv2d + BN + ReLU + MaxPool</td>
+                                    <td>64 × 8 × 8</td>
+                                    <td>~18K</td>
+                                </tr>
+                                <tr>
+                                    <td>Conv Block 3</td>
+                                    <td>Conv2d + BN + ReLU + MaxPool</td>
+                                    <td>128 × 4 × 4</td>
+                                    <td>~74K</td>
+                                </tr>
+                                <tr>
+                                    <td>FC1</td>
+                                    <td>Linear + ReLU + Dropout</td>
+                                    <td>256</td>
+                                    <td>~524K</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>FC2 (Output)</td>
+                                    <td>Linear</td>
+                                    <td>10</td>
+                                    <td>~2.5K</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Training Config -->
+                <div class="table-section">
+                    <h3>Training Configuration</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Dataset</td>
+                                    <td>CIFAR-10</td>
+                                </tr>
+                                <tr>
+                                    <td>Train/Val/Test Split</td>
+                                    <td>40K / 10K / 10K</td>
+                                </tr>
+                                <tr>
+                                    <td>Batch Size</td>
+                                    <td>128</td>
+                                </tr>
+                                <tr>
+                                    <td>Optimizer</td>
+                                    <td>Adam</td>
+                                </tr>
+                                <tr>
+                                    <td>Learning Rate</td>
+                                    <td>0.001</td>
+                                </tr>
+                                <tr>
+                                    <td>Weight Decay</td>
+                                    <td>1e-4</td>
+                                </tr>
+                                <tr>
+                                    <td>LR Scheduler</td>
+                                    <td>Cosine Annealing</td>
+                                </tr>
+                                <tr>
+                                    <td>Epochs</td>
+                                    <td>30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="visualizations" class="section">
+            <div class="container">
+                <h2>Visualizations</h2>
+
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4>Gradient Flow</h4>
+                        <p>Bar charts showing max and average gradient magnitudes per layer. Helps detect
+                            vanishing/exploding gradients.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>Weight Histograms</h4>
+                        <p>Distribution of weights in each layer, logged every 5 epochs to W&B for analysis.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>Weight Updates</h4>
+                        <p>Tracking how much weights change between epochs, showing learning dynamics.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>Training Curves</h4>
+                        <p>Loss and accuracy curves for training and validation, plus learning rate schedule.</p>
+                    </div>
+                </div>
+
+                <div class="table-section" style="margin-top: 2rem;">
+                    <h3>Key Findings</h3>
+                    <div class="about-content" style="padding: 1.5rem;">
+                        <ul style="color: var(--text-muted); line-height: 1.8;">
+                            <li><strong>Gradient Flow:</strong> Gradients flow properly through all layers without
+                                vanishing/exploding issues</li>
+                            <li><strong>BatchNorm Effect:</strong> Helps maintain stable gradient magnitudes across
+                                layers</li>
+                            <li><strong>Weight Updates:</strong> FC layers show larger updates than conv layers</li>
+                            <li><strong>Learning Dynamics:</strong> Cosine annealing provides smooth convergence</li>
+                            <li><strong>Data Augmentation:</strong> RandomCrop and HorizontalFlip improve generalization
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Links</h2>
+                <div class="notebooks-grid">
+                    <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/tree/Assignment_2/Nisarg_B23CS1075_lab2_worksheet"
+                        target="_blank" class="notebook-card">
+                        <h4>📓 Jupyter Notebook</h4>
+                        <p>Complete code with custom dataloader, model training, and all visualizations</p>
+                        <span class="notebook-link">View on GitHub →</span>
+                    </a>
+                    <a href="#" class="notebook-card" id="wandb-link">
+                        <h4>📊 W&B Dashboard</h4>
+                        <p>Interactive visualizations: gradient histograms, weight updates, training curves</p>
+                        <span class="notebook-link">Open Dashboard →</span>
+                    </a>
+                </div>
+                <p class="table-note" style="text-align: center; margin-top: 1rem;">
+                    * Update W&B link after running the notebook
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Nisarg Upadhyay | B23CS1075 | IIT Jodhpur</p>
+        </div>
+    </footer>
+
+    <style>
+        .back-link {
+            display: inline-block;
+            color: var(--primary-light);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            padding: 3rem 0;
+        }
+
+        .section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .overview-grid,
+        .results-grid,
+        .notebooks-grid,
+        .insights-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .overview-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .results-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            margin-bottom: 3rem;
+        }
+
+        .notebooks-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .insights-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .overview-card,
+        .insight-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .overview-card h4,
+        .insight-card h4 {
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .overview-card p,
+        .overview-card ul,
+        .insight-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .overview-card ul {
+            padding-left: 1.25rem;
+        }
+
+        .overview-card li {
+            margin-bottom: 0.25rem;
+        }
+
+        .result-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: var(--text);
+            margin-top: 0.25rem;
+        }
+
+        .result-details {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .table-section {
+            margin-bottom: 2rem;
+        }
+
+        .table-section h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--surface-light);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        td {
+            font-size: 0.875rem;
+        }
+
+        .highlight-row {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .table-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+            font-style: italic;
+        }
+
+        .notebook-card {
+            display: block;
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .notebook-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .notebook-card h4 {
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .notebook-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .notebook-link {
+            color: var(--primary-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .about-content {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+    </style>
+</body>
+
+</html>

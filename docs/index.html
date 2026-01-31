@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,10 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="gradient-bg"></div>
-    
+
     <header>
         <nav class="container">
             <div class="logo">
@@ -17,7 +19,8 @@
             </div>
             <div class="nav-links">
                 <a href="#assignments">Assignments</a>
-                <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075" target="_blank">GitHub</a>
+                <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
+                    target="_blank">GitHub</a>
             </div>
         </nav>
     </header>
@@ -33,7 +36,7 @@
         <section id="assignments" class="assignments">
             <div class="container">
                 <h2>Assignments</h2>
-                
+
                 <!-- Assignment 1 Card -->
                 <div class="assignment-card featured">
                     <div class="card-header">
@@ -42,10 +45,10 @@
                     </div>
                     <h3>Deep Learning & SVM Classification</h3>
                     <p class="description">
-                        Training ResNet architectures and SVM classifiers on MNIST & FashionMNIST datasets. 
+                        Training ResNet architectures and SVM classifiers on MNIST & FashionMNIST datasets.
                         Includes hyperparameter tuning, CPU vs GPU performance analysis, and FLOPs computation.
                     </p>
-                    
+
                     <div class="highlights">
                         <div class="highlight-item">
                             <span class="highlight-value">99.20%</span>
@@ -71,25 +74,59 @@
 
                     <div class="card-links">
                         <a href="assignment1.html" class="btn primary">View Details</a>
-                        <a href="https://colab.research.google.com/drive/1-3agnpflxnU_hf_g7Wbe6ltnSeutNw2f?usp=sharing" target="_blank" class="btn secondary">
+                        <a href="https://colab.research.google.com/drive/1-3agnpflxnU_hf_g7Wbe6ltnSeutNw2f?usp=sharing"
+                            target="_blank" class="btn secondary">
                             <span>📓</span> Deep Learning Notebook
                         </a>
-                        <a href="https://colab.research.google.com/drive/14oD_n-gdJ2UhbP2VbSXAfVhBiyGsc8Dh?usp=sharing" target="_blank" class="btn secondary">
+                        <a href="https://colab.research.google.com/drive/14oD_n-gdJ2UhbP2VbSXAfVhBiyGsc8Dh?usp=sharing"
+                            target="_blank" class="btn secondary">
                             <span>📓</span> SVM Notebook
                         </a>
                     </div>
                 </div>
 
-                <!-- Placeholder for Future Assignments -->
-                <div class="assignment-card upcoming">
+                <!-- Assignment 2 Card -->
+                <div class="assignment-card featured">
                     <div class="card-header">
                         <span class="assignment-number">02</span>
-                        <span class="status upcoming-badge">Coming Soon</span>
+                        <span class="status completed">✓ Completed</span>
                     </div>
-                    <h3>Assignment 2</h3>
+                    <h3>CNN Training on CIFAR-10</h3>
                     <p class="description">
-                        Details will be added once the assignment is released.
+                        Training a SimpleCNN model on CIFAR-10 with custom dataloader, FLOPs counting,
+                        gradient flow visualization, and weight update tracking using Weights & Biases.
                     </p>
+
+                    <div class="highlights">
+                        <div class="highlight-item">
+                            <span class="highlight-value">~500K</span>
+                            <span class="highlight-label">Parameters</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-value">30</span>
+                            <span class="highlight-label">Epochs</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-value">W&B</span>
+                            <span class="highlight-label">Visualization</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <span class="tech">PyTorch</span>
+                        <span class="tech">CIFAR-10</span>
+                        <span class="tech">SimpleCNN</span>
+                        <span class="tech">W&B</span>
+                        <span class="tech">ptflops</span>
+                    </div>
+
+                    <div class="card-links">
+                        <a href="assignment2.html" class="btn primary">View Details</a>
+                        <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/tree/Assignment_2/Nisarg_B23CS1075_lab2_worksheet"
+                            target="_blank" class="btn secondary">
+                            <span>📓</span> Notebook
+                        </a>
+                    </div>
                 </div>
 
                 <div class="assignment-card upcoming">
@@ -112,12 +149,14 @@
                     <div class="about-text">
                         <p>
                             This repository contains my coursework for the MLOps (Machine Learning Operations) course.
-                            Each assignment explores different aspects of deploying, optimizing, and managing machine learning models.
+                            Each assignment explores different aspects of deploying, optimizing, and managing machine
+                            learning models.
                         </p>
                         <div class="contact-links">
                             <a href="https://github.com/NisargUpadhyayIITJ" target="_blank" class="contact-btn">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    <path
+                                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                                 </svg>
                                 GitHub Profile
                             </a>
@@ -134,4 +173,5 @@
         </div>
     </footer>
 </body>
+
 </html>
