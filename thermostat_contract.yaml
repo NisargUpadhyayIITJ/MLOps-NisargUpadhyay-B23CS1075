@@ -1,0 +1,183 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# DATA CONTRACT: Smart Thermostat Fleet IoT Data
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# NEGOTIATION SUMMARY
+# ───────────────────
+# Producer: IoT Platform Team (iot-platform@company.com)
+# Consumer: Analytics Platform Team (analytics@company.com)
+#
+# Background:
+#   - Fleet of 10,000 smart thermostats sending data every minute
+#   - Known issue: Failed/uncalibrated sensors default to 9999°C
+#   - This breaks "Average Home Temperature" reports by skewing the mean
+#   - Battery level readings outside 0.0-1.0 indicate sensor malfunction
+#
+# Agreed Terms:
+#   - Temperature must be within realistic range: -30°C to 60°C
+#   - Battery level must be between 0.0 and 1.0 (inclusive)
+#   - Hard enforcement to filter out malfunctioning sensor data
+#
+# Signed off: 2024-01-15 by IoT Platform Lead + Analytics Lead
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+dataContractSpecification: 0.9.3
+id: urn:datacontract:iot:thermostat
+version: 1.0.0
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 1. OWNERSHIP & GOVERNANCE
+# ───────────────────────────────────────────────────────────────────────────
+info:
+  title: "Smart Thermostat Fleet Data"
+  description: |
+    Temperature and battery readings from a fleet of 10,000 smart thermostats.
+    Data sent every minute to central analytics platform.
+    Used for: Average Home Temperature reports, energy consumption analysis,
+    and predictive maintenance (battery level monitoring).
+    NOTE: Includes sensor health validation to filter malfunctioning devices.
+  owner: "IoT Platform Team"
+  contact:
+    name: "IoT Data Team"
+    email: "iot-data@company.com"
+    slack: "#iot-platform"
+  classification: internal
+  tags: [iot, thermostat, temperature, sensors, smart-home]
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 2. SCHEMA DEFINITION (Logical Contract)
+# ───────────────────────────────────────────────────────────────────────────
+schema:
+  type: object
+  properties:
+
+    device_id:
+      type: string
+      description: |
+        Unique identifier for the thermostat device.
+        Used to track individual device readings and health status.
+      pii: false
+      # physical_mapping: dev_id
+
+    temperature_celsius:
+      type: number
+      minimum: -30
+      maximum: 60
+      description: |
+        Temperature reading in degrees Celsius.
+        Valid range: -30°C to 60°C (inclusive).
+        Values outside this range (e.g., 9999) indicate sensor failure
+        or calibration issues and must be rejected.
+      pii: false
+      # physical_mapping: temp_c
+
+    battery_level:
+      type: number
+      minimum: 0.0
+      maximum: 1.0
+      description: |
+        Battery charge level as a decimal percentage.
+        Valid range: 0.0 (dead) to 1.0 (full charge) inclusive.
+        Values outside this range indicate sensor malfunction.
+        0.0 = completely dead battery (valid reading)
+        1.0 = fully charged (valid reading)
+      pii: false
+      # physical_mapping: batt_lvl
+
+  required:
+    - device_id
+    - temperature_celsius
+    - battery_level
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 3. SERVICE LEVEL AGREEMENTS (SLAs)
+# ───────────────────────────────────────────────────────────────────────────
+sla:
+  freshness:
+    threshold: "2 minutes"
+    description: "Sensors report every minute; 2-minute threshold allows for network latency"
+  availability:
+    percentage: "99.5%"
+    description: "High availability for continuous monitoring dashboards"
+  retention:
+    period: "1 year"
+    description: "Historical data retained for seasonal trend analysis"
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 4. DATA QUALITY RULES
+# Filter out malfunctioning sensor data
+# ───────────────────────────────────────────────────────────────────────────
+quality:
+
+  # Rule 1: Temperature must be within valid range (-30°C to 60°C)
+  - name: temperature_valid_range
+    type: validity
+    expression: "temperature_celsius >= -30 AND temperature_celsius <= 60"
+    threshold: "100%"
+    enforcement: hard  # CIRCUIT BREAKER: Invalid temperatures blocked
+    description: |
+      Temperature must be between -30°C and 60°C inclusive.
+      Readings outside this range (e.g., 9999°C from failed sensors)
+      indicate sensor failure or loss of calibration.
+      These readings are rejected to prevent skewing average calculations.
+      Boundary values: -30°C (extreme cold) and 60°C (extreme heat) are valid.
+
+  # Rule 2: Battery level must be within valid range (0.0 to 1.0)
+  - name: battery_level_valid_range
+    type: validity
+    expression: "battery_level >= 0.0 AND battery_level <= 1.0"
+    threshold: "100%"
+    enforcement: hard  # CIRCUIT BREAKER: Invalid battery readings blocked
+    description: |
+      Battery level must be between 0.0 and 1.0 inclusive.
+      Readings outside this range (e.g., 1.5 or -0.2) indicate sensor malfunction.
+      Boundary values:
+        - 0.0 = dead battery (valid - device needs replacement)
+        - 1.0 = full charge (valid - fully charged device)
+
+  # Rule 3: Device ID completeness
+  - name: device_id_complete
+    type: completeness
+    column: device_id
+    threshold: "100%"
+    enforcement: hard
+    description: "All readings must be associated with a device ID"
+
+  # Rule 4: Temperature completeness
+  - name: temperature_complete
+    type: completeness
+    column: temperature_celsius
+    threshold: "100%"
+    enforcement: hard
+    description: "All readings must include temperature data"
+
+  # Rule 5: Battery level completeness
+  - name: battery_level_complete
+    type: completeness
+    column: battery_level
+    threshold: "100%"
+    enforcement: hard
+    description: "All readings must include battery level data"
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 5. LINEAGE & CONSUMERS
+# ───────────────────────────────────────────────────────────────────────────
+lineage:
+  sources:
+    - name: thermostat_iot_stream
+      type: kafka
+      topic: thermostat-readings
+      description: "Real-time thermostat sensor data stream"
+  consumers:
+    - name: average-temperature-report
+      team: analytics
+      usage: "Daily/weekly average home temperature dashboards"
+    - name: predictive-maintenance
+      team: operations
+      usage: "Battery level monitoring for proactive device replacement"

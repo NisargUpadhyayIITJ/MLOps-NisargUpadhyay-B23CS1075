@@ -26,18 +26,3 @@ Repository for MLOps course assignments at IIT Jodhpur.
   - W&B integration
 
 ---
-
-## Repository Structure
-
-```
-MLOps-NisargUpadhyay-B23CS1075/
-├── docs/                           # GitHub Pages site
-│   ├── index.html
-│   ├── assignment1.html
-│   ├── assignment2.html
-│   └── style.css
-├── Nisarg_B23CS1075_lab2_worksheet/  # Assignment 2
-│   ├── MLOps_Assignment2_CNN_CIFAR10.ipynb
-│   └── README.md
-└── README.md
-```

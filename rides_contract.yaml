@@ -1,0 +1,219 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# DATA CONTRACT: CityMove Ride-Share Platform
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# NEGOTIATION SUMMARY
+# ───────────────────
+# Producer: Data Engineering Team (data-engineering@citymove.com)
+# Consumer: Dynamic Pricing Algorithm - Machine Learning Team (ml-team@citymove.com)
+#
+# Background:
+#   - Previous incident: Schema change (cost_total → fare_final) caused 4-hour
+#     outage costing $50,000 due to direct database consumption.
+#   - This contract establishes a stable interface between the database and
+#     all consumers to prevent future breaking changes.
+#
+# Agreed Terms:
+#   - Producer provides business-friendly logical names (not DB column names)
+#   - ML Team requires 30-minute freshness SLA (model retrains hourly)
+#   - Hard enforcement on fare, rating, and distance validation
+#   - Passenger ID (pax_id) flagged as PII for privacy compliance
+#
+# Trade-offs:
+#   - Producer commits to maintaining logical-to-physical mapping
+#   - Consumer accepts contract as single source of truth (no direct DB access)
+#   - Circuit breaker enabled: bad data blocked at contract layer
+#
+# Signed off: 2024-02-01 by Data Engineering Lead + ML Team Lead
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+dataContractSpecification: 0.9.3
+id: urn:datacontract:citymove:rides
+version: 1.0.0
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 1. OWNERSHIP & GOVERNANCE
+# ───────────────────────────────────────────────────────────────────────────
+info:
+  title: "CityMove Ride Data"
+  description: |
+    Ride transaction records from the CityMove ride-sharing platform.
+    Contains pickup timestamps, fare amounts, distances, and driver ratings.
+    Primary use: Dynamic Pricing Algorithm for ML-based fare optimization.
+    NOTE: Contains PII (passenger_id) - handle with appropriate data protection.
+  owner: "Data Engineering Team"
+  contact:
+    name: "Data Platform Team"
+    email: "data-platform@citymove.com"
+    slack: "#data-platform-support"
+  classification: confidential
+  tags: [rides, transportation, pricing, ml-input, pii]
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 2. SCHEMA DEFINITION (Logical Contract)
+# Maps cryptic DB column names to business-friendly logical names
+# ───────────────────────────────────────────────────────────────────────────
+schema:
+  type: object
+  properties:
+
+    ride_id:
+      type: string
+      description: |
+        Unique identifier for each ride transaction.
+        Format: alphanumeric with hyphens (e.g., "a1-b2-c3")
+      pii: false
+      # physical_mapping: r_id
+
+    pickup_timestamp:
+      type: string
+      format: datetime
+      description: |
+        Date and time when the ride started (pickup time).
+        Timezone: UTC. Format: YYYY-MM-DD HH:MM:SS
+      pii: false
+      # physical_mapping: ts_start
+
+    passenger_id:
+      type: integer
+      description: |
+        Unique identifier for the passenger.
+        WARNING: This field is PII and allows identification of users.
+        Handle according to data privacy regulations (GDPR, CCPA).
+      pii: true  # SENSITIVE: Allows user identification
+      # physical_mapping: pax_id
+
+    driver_rating:
+      type: number
+      minimum: 1.0
+      maximum: 5.0
+      description: |
+        Driver's rating for this ride on a scale of 1.0 to 5.0.
+        1.0 = lowest rating, 5.0 = highest rating.
+        Used by ML model for pricing adjustments based on driver quality.
+      pii: false
+      # physical_mapping: d_rating
+
+    fare_amount_usd:
+      type: number
+      minimum: 0
+      description: |
+        Total fare charged for the ride in USD.
+        Must be non-negative (>= 0). Negative values indicate data corruption.
+        Critical input for Dynamic Pricing Algorithm.
+      pii: false
+      # physical_mapping: fare_final (previously cost_total)
+
+    distance_meters:
+      type: integer
+      description: |
+        Total distance traveled during the ride in meters.
+        Must not be null - required for all pricing calculations.
+        Used to calculate per-meter pricing and surge zones.
+      pii: false
+      # physical_mapping: dist_m
+
+  required:
+    - ride_id
+    - pickup_timestamp
+    - passenger_id
+    - driver_rating
+    - fare_amount_usd
+    - distance_meters
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 3. SERVICE LEVEL AGREEMENTS (SLAs)
+# ───────────────────────────────────────────────────────────────────────────
+sla:
+  freshness:
+    threshold: "30 minutes"
+    description: |
+      Data must be available within 30 minutes of ride completion.
+      Required because ML model retrains every hour and needs recent data.
+  availability:
+    percentage: "99.5%"
+    description: "High availability for continuous ML model retraining"
+  retention:
+    period: "2 years"
+    description: "Historical ride data retained for trend analysis and audits"
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 4. DATA QUALITY RULES
+# Circuit breaker rules to prevent bad data from reaching ML model
+# ───────────────────────────────────────────────────────────────────────────
+quality:
+
+  # Rule 1: Ride ID uniqueness
+  - name: ride_id_unique
+    type: uniqueness
+    column: ride_id
+    threshold: "100%"
+    enforcement: hard
+    description: "Each ride must have a unique identifier"
+
+  # Rule 2: Fare must never be negative (CRITICAL - prevents ML crash)
+  - name: fare_non_negative
+    type: validity
+    expression: "fare_amount_usd >= 0"
+    threshold: "100%"
+    enforcement: hard  # CIRCUIT BREAKER: Block pipeline on violation
+    description: |
+      Fare must be non-negative. Negative fares indicate data corruption.
+      If fare_final comes in as -5.00, this rule blocks the record from
+      reaching the ML model, preventing algorithm crashes.
+
+  # Rule 3: Driver rating must be within valid range (1.0 - 5.0)
+  - name: driver_rating_valid_range
+    type: validity
+    expression: "driver_rating >= 1.0 AND driver_rating <= 5.0"
+    threshold: "100%"
+    enforcement: hard  # CIRCUIT BREAKER: Invalid ratings blocked
+    description: |
+      Driver rating must be between 1.0 and 5.0 inclusive.
+      Out-of-range values indicate sensor/input errors.
+
+  # Rule 4: Distance must not be null (required for pricing)
+  - name: distance_not_null
+    type: completeness
+    column: distance_meters
+    threshold: "100%"
+    enforcement: hard  # CIRCUIT BREAKER: Null distances blocked
+    description: |
+      Distance is mandatory for all records.
+      Null distance values cannot be used for pricing calculations.
+
+  # Rule 5: Pickup timestamp completeness
+  - name: pickup_timestamp_complete
+    type: completeness
+    column: pickup_timestamp
+    threshold: "100%"
+    enforcement: hard
+    description: "All rides must have a valid pickup timestamp"
+
+  # Rule 6: Passenger ID completeness
+  - name: passenger_id_complete
+    type: completeness
+    column: passenger_id
+    threshold: "100%"
+    enforcement: hard
+    description: "All rides must be associated with a passenger"
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 5. LINEAGE & CONSUMERS
+# ───────────────────────────────────────────────────────────────────────────
+lineage:
+  sources:
+    - name: operational_postgresql_db
+      type: postgresql
+      table: raw_rides_log_v2
+      description: "Operational ride-sharing database"
+  consumers:
+    - name: dynamic-pricing-algorithm
+      team: ml-team
+      usage: "Real-time fare optimization and surge pricing calculations"

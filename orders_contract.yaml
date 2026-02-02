@@ -1,0 +1,156 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# DATA CONTRACT: E-commerce Flash Sale Order Stream
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# NEGOTIATION SUMMARY
+# ───────────────────
+# Producer: E-commerce Platform Team (ecommerce@company.com)
+# Consumer: Marketing Dashboard Team (marketing-analytics@company.com)
+#
+# Background:
+#   - Black Friday real-time order feed for dynamic ad spend adjustments
+#   - Previous issues: Negative order totals broke calculations
+#   - Dashboard crashed on unmapped status_code (7) - only handled 2, 5, 9
+#
+# Agreed Terms:
+#   - Order total must be non-negative (>= 0)
+#   - Status codes mapped to logical enum: PAID, SHIPPED, CANCELLED
+#   - Any unmapped status codes (not 2, 5, 9) rejected at contract layer
+#   - Hard enforcement to prevent dashboard crashes during peak traffic
+#
+# Signed off: 2024-11-01 (Pre-Black Friday deployment)
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+dataContractSpecification: 0.9.3
+id: urn:datacontract:ecommerce:orders
+version: 1.0.0
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 1. OWNERSHIP & GOVERNANCE
+# ───────────────────────────────────────────────────────────────────────────
+info:
+  title: "E-commerce Order Stream"
+  description: |
+    Real-time order feed for flash sale events (Black Friday, Cyber Monday).
+    Used by Marketing Dashboard to dynamically adjust ad spend based on
+    order volume and status distribution.
+    Critical during peak traffic periods - must be highly reliable.
+  owner: "E-commerce Platform Team"
+  contact:
+    name: "Platform Operations"
+    email: "platform-ops@company.com"
+    slack: "#ecommerce-data"
+  classification: internal
+  tags: [orders, ecommerce, marketing, real-time, flash-sale]
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 2. SCHEMA DEFINITION (Logical Contract)
+# ───────────────────────────────────────────────────────────────────────────
+schema:
+  type: object
+  properties:
+
+    order_total_usd:
+      type: number
+      minimum: 0
+      description: |
+        Total order value in USD.
+        Must be non-negative (>= 0). Negative values indicate bugs.
+        Used for revenue calculations and ad spend optimization.
+      pii: false
+      # physical_mapping: o_total
+
+    status:
+      type: string
+      enum: [PAID, SHIPPED, CANCELLED]
+      description: |
+        Order status mapped from physical status codes.
+        Mapping: 2=PAID, 5=SHIPPED, 9=CANCELLED
+        Only these three values are valid - unmapped codes rejected.
+      pii: false
+      # physical_mapping: status_code (integer codes 2, 5, 9)
+
+  required:
+    - order_total_usd
+    - status
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 3. SERVICE LEVEL AGREEMENTS (SLAs)
+# ───────────────────────────────────────────────────────────────────────────
+sla:
+  freshness:
+    threshold: "1 minute"
+    description: "Real-time feed for dynamic ad spend adjustments during flash sales"
+  availability:
+    percentage: "99.9%"
+    description: "Critical during Black Friday/Cyber Monday peak periods"
+  retention:
+    period: "90 days"
+    description: "Retained for post-sale analysis and campaign optimization"
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 4. DATA QUALITY RULES
+# ───────────────────────────────────────────────────────────────────────────
+quality:
+
+  # Rule 1: Order total must be non-negative
+  - name: order_total_non_negative
+    type: validity
+    expression: "order_total_usd >= 0"
+    threshold: "100%"
+    enforcement: hard
+    description: |
+      Order total must be >= 0. Negative order totals indicate a bug
+      in the order processing system and must be rejected to prevent
+      incorrect revenue calculations.
+
+  # Rule 2: Status must be valid enum value
+  - name: status_valid_enum
+    type: validity
+    expression: "status IN ('PAID', 'SHIPPED', 'CANCELLED')"
+    threshold: "100%"
+    enforcement: hard
+    description: |
+      Status must be one of: PAID, SHIPPED, CANCELLED.
+      Mapped from physical codes: 2=PAID, 5=SHIPPED, 9=CANCELLED.
+      Dashboard only understands these three states.
+
+  # Rule 3: Reject unmapped status codes (CRITICAL)
+  - name: status_code_mapped
+    type: validity
+    expression: "status_code IN (2, 5, 9)"
+    threshold: "100%"
+    enforcement: hard  # CIRCUIT BREAKER: Unmapped codes blocked
+    description: |
+      Only status codes 2, 5, and 9 are valid in the source system.
+      Any other code (e.g., 7, 1, 99) must be rejected at ingestion.
+      Last year, unmapped code 7 caused dashboard crash during peak traffic.
+      This rule acts as a circuit breaker to prevent similar incidents.
+
+  # Rule 4: Order total completeness
+  - name: order_total_complete
+    type: completeness
+    column: order_total_usd
+    threshold: "100%"
+    enforcement: hard
+    description: "All orders must have a total value"
+
+
+# ───────────────────────────────────────────────────────────────────────────
+# 5. LINEAGE & CONSUMERS
+# ───────────────────────────────────────────────────────────────────────────
+lineage:
+  sources:
+    - name: orders_database
+      type: postgresql
+      table: orders_raw
+      description: "E-commerce order management system"
+  consumers:
+    - name: marketing-dashboard
+      team: marketing-analytics
+      usage: "Real-time ad spend optimization during flash sales"
