@@ -1,0 +1,14 @@
+{
+  "eval_loss": 1.2046617269515991,
+  "eval_model_preparation_time": 0.001,
+  "eval_accuracy": 0.620625,
+  "eval_precision": 0.6210264025417562,
+  "eval_recall": 0.620625,
+  "eval_f1": 0.6201721476041101,
+  "eval_runtime": 5.5398,
+  "eval_samples_per_second": 288.819,
+  "eval_steps_per_second": 18.051,
+  "source": "./distilbert-reviews-genres",
+  "source_type": "local",
+  "classification_report": "                        precision    recall  f1-score   support\n\n              children       0.65      0.71      0.68       200\n        comics_graphic       0.79      0.82      0.80       200\n    fantasy_paranormal       0.43      0.41      0.42       200\n     history_biography       0.61      0.56      0.58       200\nmystery_thriller_crime       0.60      0.57      0.59       200\n                poetry       0.77      0.78      0.77       200\n               romance       0.71      0.65      0.68       200\n           young_adult       0.42      0.46      0.44       200\n\n              accuracy                           0.62      1600\n             macro avg       0.62      0.62      0.62      1600\n          weighted avg       0.62      0.62      0.62      1600\n"
+}
