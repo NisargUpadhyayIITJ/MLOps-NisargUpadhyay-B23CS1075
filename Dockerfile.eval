@@ -1,0 +1,39 @@
+# ──────────────────────────────────────────────────────────────
+# Dockerfile.eval - Production Evaluation-Only image
+# ──────────────────────────────────────────────────────────────
+# This Dockerfile builds a lightweight image that:
+#   1. Pulls the fine-tuned model from HuggingFace Hub
+#   2. Downloads test data from Goodreads
+#   3. Runs evaluation and prints metrics automatically
+#
+# Build:
+#   docker build -f Dockerfile.eval -t mlops-eval .
+#
+# Run:
+#   docker run mlops-eval
+#
+# Run with a different model repo:
+#   docker run mlops-eval python src/eval.py --hf_repo YOUR/REPO
+# ──────────────────────────────────────────────────────────────
+
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy only the scripts needed for evaluation
+COPY src/eval.py src/eval.py
+COPY src/data.py src/data.py
+COPY src/utils.py src/utils.py
+
+# Default: evaluate the model from HuggingFace Hub
+CMD ["python", "src/eval.py", "--hf_repo", "NisargUpadhyay/distilbert-goodreads-genres"]
