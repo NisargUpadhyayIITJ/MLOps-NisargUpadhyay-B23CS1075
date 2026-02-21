@@ -1,0 +1,13 @@
+{
+  "eval_loss": -6.640862464904785,
+  "eval_accuracy": 0.365625,
+  "eval_precision": 0.452835297965459,
+  "eval_recall": 0.365625,
+  "eval_f1": 0.3837976966793438,
+  "eval_runtime": 21.0834,
+  "eval_samples_per_second": 75.889,
+  "eval_steps_per_second": 1.186,
+  "source": "NisargUpadhyay/distilbert-goodreads-genres",
+  "source_type": "hub",
+  "classification_report": "                        precision    recall  f1-score   support\n\n              children       0.41      0.51      0.45       200\n        comics_graphic       0.59      0.35      0.44       200\n    fantasy_paranormal       0.34      0.20      0.26       200\n     history_biography       0.46      0.30      0.36       200\nmystery_thriller_crime       0.52      0.33      0.40       200\n                poetry       0.74      0.48      0.58       200\n               romance       0.16      0.47      0.24       200\n           young_adult       0.39      0.28      0.33       200\n\n              accuracy                           0.37      1600\n             macro avg       0.45      0.37      0.38      1600\n          weighted avg       0.45      0.37      0.38      1600\n"
+}
