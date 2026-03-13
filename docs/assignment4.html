@@ -23,6 +23,7 @@
           <a href="index.html">Home</a>
           <a href="#baseline">Baseline</a>
           <a href="#tuning">Tuning</a>
+          <a href="#results">Results</a>
           <a href="#deliverables">Deliverables</a>
           <a
             href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
@@ -41,6 +42,20 @@
           <p class="subtitle">
             Optimizing Transformer Translation with Ray Tune & Optuna
           </p>
+          <div class="card-links" style="margin-top: 1.5rem">
+            <a
+              href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
+              target="_blank"
+              class="btn primary"
+              >GitHub Repo</a
+            >
+            <a
+              href="https://huggingface.co/NisargUpadhyay/b23cs1075-assignment4-models"
+              target="_blank"
+              class="btn secondary"
+              >HF Model Repo</a
+            >
+          </div>
         </div>
       </section>
 
@@ -62,7 +77,7 @@
                 <li>Notebook training loop refactored into a reusable script</li>
                 <li>Ray Tune search with Optuna-guided trial selection</li>
                 <li>ASHA early stopping for cheaper sweeps</li>
-                <li>Auto-generated summary and report markdown</li>
+                <li>Auto-generated summary, markdown report, and PDF export</li>
               </ul>
             </div>
             <div class="overview-card">
@@ -74,6 +89,14 @@
                 <span class="tech">ASHA</span>
                 <span class="tech">NLTK BLEU</span>
               </div>
+            </div>
+            <div class="overview-card">
+              <h4>Submission Layout</h4>
+              <p>
+                The code, report, and docs live in the GitHub repository, while
+                the large `.pth` checkpoints are hosted on Hugging Face Hub to
+                avoid GitHub's file-size limit.
+              </p>
             </div>
           </div>
         </div>
@@ -103,6 +126,119 @@
               <div class="result-value">100</div>
               <div class="result-label">Baseline Epochs</div>
               <div class="result-details">Hardcoded notebook run</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="results" class="section">
+        <div class="container">
+          <h2>Final Results</h2>
+
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-value">76.98</div>
+              <div class="result-label">Best Sweep BLEU</div>
+              <div class="result-details">Best Ray Tune trial after 20 tuning epochs</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value">84.72</div>
+              <div class="result-label">Best Final BLEU</div>
+              <div class="result-details">Best model after final retraining</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value">6</div>
+              <div class="result-label">Epochs To Beat Baseline</div>
+              <div class="result-details">Exceeded the 52.47 BLEU notebook baseline early</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value">14.22 min</div>
+              <div class="result-label">Final Training Time</div>
+              <div class="result-details">20-epoch best-model run</div>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <h3>Best Configuration</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hyperparameter</th>
+                    <th>Best Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Learning Rate</td>
+                    <td>8.8844e-05</td>
+                  </tr>
+                  <tr>
+                    <td>Batch Size</td>
+                    <td>16</td>
+                  </tr>
+                  <tr>
+                    <td>Attention Heads</td>
+                    <td>4</td>
+                  </tr>
+                  <tr>
+                    <td>Feedforward Dimension</td>
+                    <td>1536</td>
+                  </tr>
+                  <tr>
+                    <td>Dropout</td>
+                    <td>0.1902</td>
+                  </tr>
+                  <tr>
+                    <td>Number of Layers</td>
+                    <td>4</td>
+                  </tr>
+                  <tr>
+                    <td>Weight Decay</td>
+                    <td>1.1495e-06</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <h3>Completed Sweep Summary</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Sweep Size</td>
+                    <td>20 trials × 20 epochs</td>
+                  </tr>
+                  <tr>
+                    <td>Scheduler</td>
+                    <td>ASHAScheduler on epoch-level BLEU</td>
+                  </tr>
+                  <tr>
+                    <td>Search Algorithm</td>
+                    <td>OptunaSearch</td>
+                  </tr>
+                  <tr>
+                    <td>Best Trial Loss</td>
+                    <td>0.5256</td>
+                  </tr>
+                  <tr>
+                    <td>Final Best-Model Loss</td>
+                    <td>0.5256</td>
+                  </tr>
+                  <tr>
+                    <td>Efficiency Goal</td>
+                    <td>Met by epoch 6</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -188,36 +324,35 @@
           </div>
 
           <div class="table-section">
-            <h3>Smoke-Test Validation</h3>
+            <h3>Implementation Notes</h3>
             <p class="table-note" style="margin-bottom: 1rem">
-              The repository code path was validated with a short 2-sample, 2-epoch
-              Ray Tune sweep in the `../ops_venv` environment before the final
-              longer search is launched.
+              The pipeline was smoke-tested first and then scaled to the final
+              20-trial sweep used for submission.
             </p>
             <div class="table-wrapper">
               <table>
                 <thead>
                   <tr>
-                    <th>Check</th>
-                    <th>Status</th>
+                    <th>Step</th>
+                    <th>Outcome</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>Baseline training script</td>
-                    <td>Validated</td>
+                    <td>Notebook metrics captured for the report baseline</td>
                   </tr>
                   <tr>
                     <td>Ray workers reading dataset</td>
-                    <td>Validated</td>
+                    <td>Validated with absolute dataset paths</td>
                   </tr>
                   <tr>
                     <td>Metric reporting and best-trial extraction</td>
-                    <td>Validated</td>
+                    <td>`tune.report(...)` feeds ASHA and Optuna each epoch</td>
                   </tr>
                   <tr>
                     <td>Summary/report generation</td>
-                    <td>Validated</td>
+                    <td>Markdown, JSON, and PDF artifacts exported</td>
                   </tr>
                 </tbody>
               </table>
@@ -233,7 +368,7 @@
           <div class="notebooks-grid">
             <div class="notebook-card">
               <h4>Code</h4>
-              <p>`b23cs1075_ass_4_tuned_en_to_hi.py` contains baseline, tuning, final training, and report generation.</p>
+              <p>`b23cs1075_ass_4_tuned_en_to_hi.py` contains baseline, tuning, final training, recovery, and report generation.</p>
               <span class="notebook-link">Repository root</span>
             </div>
             <div class="notebook-card">
@@ -242,23 +377,38 @@
               <span class="notebook-link">Repository root</span>
             </div>
             <div class="notebook-card">
-              <h4>Best Model Path</h4>
-              <p>`b23cs1075_ass_4_best_model.pth` is written by the final best-model training stage.</p>
-              <span class="notebook-link">Repository root</span>
+              <h4>Model Artifacts</h4>
+              <p>`b23cs1075_ass_4_best_model.pth` and `transformer_translation_final.pth` are hosted on Hugging Face Hub for download.</p>
+              <span class="notebook-link">HF model repository</span>
             </div>
             <div class="notebook-card">
               <h4>Metrics + Configs</h4>
-              <p>`artifacts/assignment4/` stores baseline metrics, best config, Ray results, and the combined summary.</p>
+              <p>`artifacts/assignment4/` stores baseline metrics, best config, final metrics, tuning summary, and the combined submission summary.</p>
               <span class="notebook-link">Artifacts directory</span>
             </div>
+          </div>
+
+          <div class="card-links" style="margin-top: 1.5rem">
+            <a
+              href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
+              target="_blank"
+              class="btn primary"
+              >Open GitHub Repository</a
+            >
+            <a
+              href="https://huggingface.co/NisargUpadhyay/b23cs1075-assignment4-models"
+              target="_blank"
+              class="btn secondary"
+              >Open HF Model Repository</a
+            >
           </div>
 
           <div class="table-section">
             <h3>Run Commands</h3>
             <pre><code>uv pip install --python ../ops_venv/bin/python -r assignment4_requirements.txt
 ../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action baseline
-../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action tune --num-samples 20 --tune-epochs 20 --cpus-per-trial 2 --gpus-per-trial 1
-../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action final --final-epochs 30 --target-bleu 0.5247
+../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action tune --num-samples 20 --tune-epochs 20 --cpus-per-trial 4 --gpus-per-trial 1
+../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action final --final-epochs 20 --target-bleu 0.5247
 ../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action report</code></pre>
           </div>
         </div>
