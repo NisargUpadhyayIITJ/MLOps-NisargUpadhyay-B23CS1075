@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assignment 4 - MLOps Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="gradient-bg"></div>
+
+    <header>
+      <nav class="container">
+        <div class="logo">
+          <span>Nisarg Upadhyay</span>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="#baseline">Baseline</a>
+          <a href="#tuning">Tuning</a>
+          <a href="#deliverables">Deliverables</a>
+          <a
+            href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075"
+            target="_blank"
+            >GitHub</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" style="padding-bottom: 3rem">
+        <div class="container">
+          <a href="index.html" class="back-link">← Back to Home</a>
+          <h1>Assignment 4</h1>
+          <p class="subtitle">
+            Optimizing Transformer Translation with Ray Tune & Optuna
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2>Overview</h2>
+          <div class="overview-grid">
+            <div class="overview-card">
+              <h4>Objective</h4>
+              <p>
+                Tune a custom PyTorch Transformer for English → Hindi translation
+                so it can match or beat the notebook baseline BLEU in fewer
+                epochs.
+              </p>
+            </div>
+            <div class="overview-card">
+              <h4>What Changed</h4>
+              <ul>
+                <li>Notebook training loop refactored into a reusable script</li>
+                <li>Ray Tune search with Optuna-guided trial selection</li>
+                <li>ASHA early stopping for cheaper sweeps</li>
+                <li>Auto-generated summary and report markdown</li>
+              </ul>
+            </div>
+            <div class="overview-card">
+              <h4>Core Stack</h4>
+              <div class="tech-stack">
+                <span class="tech">PyTorch</span>
+                <span class="tech">Ray Tune</span>
+                <span class="tech">Optuna</span>
+                <span class="tech">ASHA</span>
+                <span class="tech">NLTK BLEU</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="baseline" class="section">
+        <div class="container">
+          <h2>Baseline</h2>
+
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-value">52.32 min</div>
+              <div class="result-label">Training Time</div>
+              <div class="result-details">100 epochs recorded in `en_to_hi.ipynb`</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value">0.0974</div>
+              <div class="result-label">Final Loss</div>
+              <div class="result-details">Notebook checkpoint average loss</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value">52.47</div>
+              <div class="result-label">BLEU Score</div>
+              <div class="result-details">NLTK corpus BLEU from the notebook</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value">100</div>
+              <div class="result-label">Baseline Epochs</div>
+              <div class="result-details">Hardcoded notebook run</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tuning" class="section">
+        <div class="container">
+          <h2>Tuning Setup</h2>
+
+          <div class="table-section">
+            <h3>Search Space</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hyperparameter</th>
+                    <th>Range</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Learning Rate</td>
+                    <td>loguniform(1e-5, 1e-3)</td>
+                  </tr>
+                  <tr>
+                    <td>Batch Size</td>
+                    <td>{16, 32, 64}</td>
+                  </tr>
+                  <tr>
+                    <td>Attention Heads</td>
+                    <td>{4, 8}</td>
+                  </tr>
+                  <tr>
+                    <td>Feedforward Dimension</td>
+                    <td>{1024, 1536, 2048}</td>
+                  </tr>
+                  <tr>
+                    <td>Dropout</td>
+                    <td>uniform(0.10, 0.40)</td>
+                  </tr>
+                  <tr>
+                    <td>Number of Layers</td>
+                    <td>{4, 6}</td>
+                  </tr>
+                  <tr>
+                    <td>Weight Decay</td>
+                    <td>loguniform(1e-6, 1e-3)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="insights-grid" style="margin-top: 2rem">
+            <div class="insight-card">
+              <h4>Ray Tune Function</h4>
+              <p>
+                `train_tune(config)` builds the model, loader, optimizer, and
+                criterion from the sampled config and reports epoch metrics to Ray.
+              </p>
+            </div>
+            <div class="insight-card">
+              <h4>Search Strategy</h4>
+              <p>
+                `OptunaSearch` proposes configurations while `ASHAScheduler`
+                prunes bad trials early to save GPU time.
+              </p>
+            </div>
+            <div class="insight-card">
+              <h4>Metrics</h4>
+              <p>
+                Each epoch reports training loss and BLEU, and the best config is
+                re-trained into a standalone model artifact.
+              </p>
+            </div>
+            <div class="insight-card">
+              <h4>Compatibility Note</h4>
+              <p>
+                The current Ray version in the repository environment uses
+                `tune.report(...)` inside Tune trials for compatibility.
+              </p>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <h3>Smoke-Test Validation</h3>
+            <p class="table-note" style="margin-bottom: 1rem">
+              The repository code path was validated with a short 2-sample, 2-epoch
+              Ray Tune sweep in the `../ops_venv` environment before the final
+              longer search is launched.
+            </p>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Check</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Baseline training script</td>
+                    <td>Validated</td>
+                  </tr>
+                  <tr>
+                    <td>Ray workers reading dataset</td>
+                    <td>Validated</td>
+                  </tr>
+                  <tr>
+                    <td>Metric reporting and best-trial extraction</td>
+                    <td>Validated</td>
+                  </tr>
+                  <tr>
+                    <td>Summary/report generation</td>
+                    <td>Validated</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="deliverables" class="section">
+        <div class="container">
+          <h2>Deliverables</h2>
+
+          <div class="notebooks-grid">
+            <div class="notebook-card">
+              <h4>Code</h4>
+              <p>`b23cs1075_ass_4_tuned_en_to_hi.py` contains baseline, tuning, final training, and report generation.</p>
+              <span class="notebook-link">Repository root</span>
+            </div>
+            <div class="notebook-card">
+              <h4>Report</h4>
+              <p>`b23cs1075_ass_4_report.md` is regenerated from the latest summary JSON, and `b23cs1075_ass_4_report.pdf` is exported for submission.</p>
+              <span class="notebook-link">Repository root</span>
+            </div>
+            <div class="notebook-card">
+              <h4>Best Model Path</h4>
+              <p>`b23cs1075_ass_4_best_model.pth` is written by the final best-model training stage.</p>
+              <span class="notebook-link">Repository root</span>
+            </div>
+            <div class="notebook-card">
+              <h4>Metrics + Configs</h4>
+              <p>`artifacts/assignment4/` stores baseline metrics, best config, Ray results, and the combined summary.</p>
+              <span class="notebook-link">Artifacts directory</span>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <h3>Run Commands</h3>
+            <pre><code>uv pip install --python ../ops_venv/bin/python -r assignment4_requirements.txt
+../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action baseline
+../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action tune --num-samples 20 --tune-epochs 20 --cpus-per-trial 2 --gpus-per-trial 1
+../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action final --final-epochs 30 --target-bleu 0.5247
+../ops_venv/bin/python b23cs1075_ass_4_tuned_en_to_hi.py --action report</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>© 2026 Nisarg Upadhyay | B23CS1075 | IIT Jodhpur</p>
+      </div>
+    </footer>
+  </body>
+</html>

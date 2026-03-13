@@ -28,3 +28,7 @@ Thumbs.db
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
+
+# Stored on Hugging Face Hub
+b23cs1075_ass_4_best_model.pth
+transformer_translation_final.pth

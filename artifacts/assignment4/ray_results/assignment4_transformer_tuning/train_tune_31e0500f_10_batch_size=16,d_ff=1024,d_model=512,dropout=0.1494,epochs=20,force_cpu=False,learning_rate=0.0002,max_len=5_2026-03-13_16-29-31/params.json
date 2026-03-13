@@ -1,0 +1,14 @@
+{
+  "batch_size": 16,
+  "d_ff": 1024,
+  "d_model": 512,
+  "dropout": 0.14944872535520903,
+  "epochs": 20,
+  "force_cpu": false,
+  "learning_rate": 0.00020310267328161973,
+  "max_len": 50,
+  "num_heads": 8,
+  "num_layers": 6,
+  "seed": 42,
+  "weight_decay": 0.0005873246936683563
+}
