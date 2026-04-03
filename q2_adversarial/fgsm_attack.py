@@ -1,6 +1,11 @@
 """
 Q2(i): FGSM Attack - From Scratch vs IBM ART comparison.
 Uses a trained ResNet-18 on CIFAR-10.
+
+Key design: The model was trained with normalized inputs, but adversarial
+attacks must operate in raw [0,1] pixel space. We wrap the model with a
+normalization layer so attacks see [0,1] inputs while the model still
+receives properly normalized tensors.
 """
 
 import os
@@ -19,9 +24,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from model import create_resnet18_cifar10
 from utils import (
-    get_cifar10_loaders,
     get_cifar10_raw_loaders,
-    denormalize,
     plot_adversarial_comparison,
     plot_perturbation_analysis,
     CIFAR10_MEAN,
@@ -34,11 +37,24 @@ CIFAR10_CLASSES = [
 ]
 
 
+class NormalizedModel(nn.Module):
+    """Wraps a model with input normalization so attacks work in [0,1] space."""
+    def __init__(self, model, mean, std):
+        super().__init__()
+        self.model = model
+        self.register_buffer("mean", torch.tensor(mean).view(1, 3, 1, 1))
+        self.register_buffer("std", torch.tensor(std).view(1, 3, 1, 1))
+
+    def forward(self, x):
+        return self.model((x - self.mean) / self.std)
+
+
 # ========== FGSM FROM SCRATCH ==========
 def fgsm_attack_scratch(model, images, targets, epsilon, criterion, device):
     """
     Implement FGSM attack from scratch.
     x_adv = x + epsilon * sign(grad_x(loss))
+    Model should accept [0,1] inputs (use NormalizedModel wrapper).
     """
     images = images.clone().detach().to(device).requires_grad_(True)
     targets = targets.to(device)
@@ -48,56 +64,42 @@ def fgsm_attack_scratch(model, images, targets, epsilon, criterion, device):
     model.zero_grad()
     loss.backward()
 
-    # Create adversarial images
     perturbation = epsilon * images.grad.data.sign()
     adv_images = images + perturbation
-    adv_images = torch.clamp(adv_images, 0, 1)  # Keep in valid range
+    adv_images = torch.clamp(adv_images, 0, 1)
 
     return adv_images.detach()
 
 
 # ========== FGSM WITH IBM ART ==========
-def fgsm_attack_art(model, images, targets, epsilon, device):
+def fgsm_attack_art(classifier, images, epsilon):
     """
     Implement FGSM attack using IBM ART.
+    classifier: pre-built ART PyTorchClassifier wrapping NormalizedModel.
     """
-    from art.estimators.classification import PyTorchClassifier
     from art.attacks.evasion import FastGradientMethod
 
-    # Wrap model in ART classifier
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-    classifier = PyTorchClassifier(
-        model=model,
-        loss=criterion,
-        optimizer=optimizer,
-        input_shape=(3, 32, 32),
-        nb_classes=10,
-        clip_values=(0.0, 1.0),
-        device_type="gpu" if device == "cuda" else "cpu",
-    )
-
-    # Create FGSM attack
     attack = FastGradientMethod(estimator=classifier, eps=epsilon)
-
-    # Generate adversarial images
     images_np = images.cpu().numpy()
     adv_images_np = attack.generate(x=images_np)
-
-    return torch.from_numpy(adv_images_np).to(device)
+    return torch.from_numpy(adv_images_np)
 
 
 def evaluate_accuracy(model, images, targets, device):
     """Evaluate model accuracy on given images."""
     model.eval()
+    correct = 0
+    total = targets.size(0)
+    bs = 256
+    all_preds = []
     with torch.no_grad():
-        images = images.to(device)
-        targets = targets.to(device)
-        outputs = model(images)
-        _, preds = outputs.max(1)
-        correct = preds.eq(targets).sum().item()
-        return 100.0 * correct / targets.size(0), preds.cpu()
+        for i in range(0, total, bs):
+            batch = images[i:i+bs].to(device)
+            out = model(batch)
+            _, preds = out.max(1)
+            correct += preds.eq(targets[i:i+bs].to(device)).sum().item()
+            all_preds.append(preds.cpu())
+    return 100.0 * correct / total, torch.cat(all_preds)
 
 
 def main():
@@ -112,24 +114,34 @@ def main():
     device = args.device if torch.cuda.is_available() else "cpu"
     os.makedirs(args.results_dir, exist_ok=True)
 
-    # Load model
-    model = create_resnet18_cifar10(num_classes=10)
-    model.load_state_dict(torch.load(args.model_path, map_location=device))
-    model = model.to(device)
+    # Load base model and wrap with normalization
+    base_model = create_resnet18_cifar10(num_classes=10)
+    base_model.load_state_dict(torch.load(args.model_path, map_location=device))
+    model = NormalizedModel(base_model, CIFAR10_MEAN, CIFAR10_STD).to(device)
     model.eval()
 
+    # Build ART classifier once (reuse for all epsilons)
+    from art.estimators.classification import PyTorchClassifier
+    art_classifier = PyTorchClassifier(
+        model=model,
+        loss=nn.CrossEntropyLoss(),
+        optimizer=torch.optim.Adam(model.parameters(), lr=1e-4),
+        input_shape=(3, 32, 32),
+        nb_classes=10,
+        clip_values=(0.0, 1.0),
+        device_type="gpu" if device == "cuda" else "cpu",
+    )
+
     # WandB
-    run = wandb.init(entity='b23cs1075-indian-institute-of-technology-', 
+    run = wandb.init(entity='b23cs1075-indian-institute-of-technology-',
         project=args.wandb_project,
         name="fgsm_attack_comparison",
         config=vars(args),
         reinit='finish_previous',
     )
 
-    # Load raw (unnormalized) test data for attacks
+    # Load raw [0,1] test data
     _, test_loader_raw = get_cifar10_raw_loaders(batch_size=args.batch_size)
-
-    # Collect all test data
     all_images = []
     all_targets = []
     for images, targets in test_loader_raw:
@@ -157,7 +169,6 @@ def main():
             art_accs.append(clean_acc)
             continue
 
-        # Process in batches
         scratch_correct = 0
         art_correct = 0
         total = 0
@@ -176,7 +187,7 @@ def main():
                 scratch_correct += pred_s.eq(batch_tgts.to(device)).sum().item()
 
             # FGSM with ART
-            adv_art = fgsm_attack_art(model, batch_imgs, batch_tgts, eps, device)
+            adv_art = fgsm_attack_art(art_classifier, batch_imgs, eps)
             with torch.no_grad():
                 out_a = model(adv_art.to(device))
                 _, pred_a = out_a.max(1)
@@ -190,12 +201,7 @@ def main():
         art_accs.append(a_acc)
 
         print(f"  Scratch Acc: {s_acc:.2f}%  |  ART Acc: {a_acc:.2f}%")
-
-        wandb.log({
-            "epsilon": eps,
-            "fgsm_scratch_accuracy": s_acc,
-            "fgsm_art_accuracy": a_acc,
-        })
+        wandb.log({"epsilon": eps, "fgsm_scratch_accuracy": s_acc, "fgsm_art_accuracy": a_acc})
 
     # ===== Perturbation analysis plot =====
     plot_path = plot_perturbation_analysis(
@@ -210,13 +216,12 @@ def main():
     sample_tgts = all_targets[:10]
 
     adv_scratch = fgsm_attack_scratch(model, sample_imgs, sample_tgts, eps_vis, criterion, device)
-    adv_art = fgsm_attack_art(model, sample_imgs, sample_tgts, eps_vis, device)
+    adv_art = fgsm_attack_art(art_classifier, sample_imgs, eps_vis)
 
     _, preds_clean = evaluate_accuracy(model, sample_imgs, sample_tgts, device)
     _, preds_scratch = evaluate_accuracy(model, adv_scratch, sample_tgts, device)
     _, preds_art = evaluate_accuracy(model, adv_art, sample_tgts, device)
 
-    # Plot comparison
     comp_path = plot_adversarial_comparison(
         sample_imgs[:5], adv_scratch.cpu()[:5], adv_art.cpu()[:5],
         sample_tgts[:5].tolist(), preds_scratch[:5].tolist(), preds_art[:5].tolist(),
@@ -229,7 +234,6 @@ def main():
     wandb_images = []
     for i in range(10):
         fig, axes = plt.subplots(1, 3, figsize=(9, 3))
-
         for ax, img, title in zip(
             axes,
             [sample_imgs[i], adv_scratch[i].cpu(), adv_art[i].cpu()],
@@ -237,7 +241,7 @@ def main():
              f"Scratch: {CIFAR10_CLASSES[preds_scratch[i]]}",
              f"ART: {CIFAR10_CLASSES[preds_art[i]]}"]
         ):
-            ax.imshow(img.permute(1, 2, 0).numpy())
+            ax.imshow(img.permute(1, 2, 0).numpy().clip(0, 1))
             ax.set_title(title, fontsize=9)
             ax.axis("off")
 
@@ -249,7 +253,7 @@ def main():
 
     wandb.log({"fgsm_samples": wandb_images})
 
-    # ===== Summary table =====
+    # ===== Summary =====
     summary = {
         "clean_accuracy": clean_acc,
         "epsilons": epsilons,
@@ -259,7 +263,6 @@ def main():
     with open(os.path.join(args.results_dir, "fgsm_summary.json"), "w") as f:
         json.dump(summary, f, indent=2)
 
-    # WandB summary table
     table = wandb.Table(columns=["Epsilon", "Clean Acc", "FGSM Scratch Acc", "FGSM ART Acc"])
     for i, eps in enumerate(epsilons):
         table.add_data(eps, clean_acc, scratch_accs[i], art_accs[i])
