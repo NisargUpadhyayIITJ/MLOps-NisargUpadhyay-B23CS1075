@@ -27,12 +27,10 @@ Thumbs.db
 # WandB local files
 wandb/
 
-# Intermediate weights (keep only best)
-weights/intermediate/
-
 # Optuna storage
 *.db
 optuna_studies/
 
-# Weights
-weights/*
+# Large intermediate files
+results/q1_*.log
+results/q2_*.log
