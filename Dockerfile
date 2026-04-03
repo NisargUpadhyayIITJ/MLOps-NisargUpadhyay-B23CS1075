@@ -14,8 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source code
 COPY . .
 
-# Create directories
-RUN mkdir -p weights results
+# Create directories used by the scripts
+RUN mkdir -p weights/q1 weights/q2 results/q1 results/q2 wandb
 
-# Default entrypoint
-ENTRYPOINT ["python"]
+# Default to an interactive shell instead of strictly the python interpreter
+CMD ["/bin/bash"]
