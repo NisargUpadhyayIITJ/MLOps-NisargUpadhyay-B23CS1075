@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 5 - ViT-S LoRA & Adversarial Attacks | Nisarg Upadhyay</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="gradient-bg"></div>
+
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <span>Nisarg Upadhyay</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">← Back to Portfolio</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" style="padding-top: 8rem; padding-bottom: 3rem;">
+            <div class="container">
+                <h1>Assignment 5</h1>
+                <p class="subtitle">ViT-S LoRA Fine-tuning on CIFAR-100 & Adversarial Attacks with IBM ART</p>
+            </div>
+        </section>
+
+        <!-- Overview -->
+        <section class="section">
+            <div class="container">
+                <h2>Overview</h2>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <h4>🎯 Q1: ViT-S + LoRA</h4>
+                        <p>Fine-tuned ViT-Small (pretrained on ImageNet) on CIFAR-100 with LoRA adapters.
+                           10 experiments across rank/alpha combinations plus Optuna search.</p>
+                    </div>
+                    <div class="overview-card">
+                        <h4>⚔️ Q2: Adversarial Attacks</h4>
+                        <p>Implemented FGSM from scratch vs IBM ART on CIFAR-10 with ResNet-18.
+                           Trained ResNet-34 adversarial detectors for PGD and BIM attacks.</p>
+                    </div>
+                    <div class="overview-card">
+                        <h4>🔬 Optuna HPO</h4>
+                        <p>Used Optuna (20 trials) to find the best LoRA configuration.
+                           Best: r=13, α=16, dropout=0.061 achieving 89.35% test accuracy.</p>
+                    </div>
+                    <div class="overview-card">
+                        <h4>🐳 Dockerized</h4>
+                        <p>All experiments run inside Docker containers with CUDA support.
+                           Full reproducibility with requirements.txt and Dockerfile.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Q1 Results -->
+        <section class="section">
+            <div class="container">
+                <h2>Q1: ViT-S LoRA Results</h2>
+
+                <div class="results-grid" style="margin-bottom: 2rem;">
+                    <div class="result-card">
+                        <span class="result-value">78.43%</span>
+                        <div class="result-label">Baseline (No LoRA)</div>
+                        <div class="result-details">38,500 trainable params</div>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-value">88.87%</span>
+                        <div class="result-label">Best Grid Search</div>
+                        <div class="result-details">r=2, α=8 — 75,364 params</div>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-value">89.35%</span>
+                        <div class="result-label">Optuna Best</div>
+                        <div class="result-details">r=13, α=16 — 278,116 params</div>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-value">+10.9%</span>
+                        <div class="result-label">LoRA Improvement</div>
+                        <div class="result-details">Over baseline accuracy</div>
+                    </div>
+                </div>
+
+                <div class="table-section">
+                    <h3>Test Results — All Configurations</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>LoRA</th>
+                                    <th>Rank</th>
+                                    <th>Alpha</th>
+                                    <th>Dropout</th>
+                                    <th>Test Accuracy</th>
+                                    <th>Trainable Params</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>No</td><td>—</td><td>—</td><td>—</td>
+                                    <td>78.43%</td><td>38,500</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>2</td><td>2</td><td>0.1</td>
+                                    <td>87.52%</td><td>75,364</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>2</td><td>4</td><td>0.1</td>
+                                    <td>88.58%</td><td>75,364</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>Yes</td><td>2</td><td>8</td><td>0.1</td>
+                                    <td class="best">88.87%</td><td>75,364</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>4</td><td>2</td><td>0.1</td>
+                                    <td>88.07%</td><td>112,228</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>4</td><td>4</td><td>0.1</td>
+                                    <td>88.32%</td><td>112,228</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>4</td><td>8</td><td>0.1</td>
+                                    <td>88.78%</td><td>112,228</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>8</td><td>2</td><td>0.1</td>
+                                    <td>88.40%</td><td>185,956</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>8</td><td>4</td><td>0.1</td>
+                                    <td>88.37%</td><td>185,956</td>
+                                </tr>
+                                <tr>
+                                    <td>Yes</td><td>8</td><td>8</td><td>0.1</td>
+                                    <td>88.74%</td><td>185,956</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>Yes</td><td>13</td><td>16</td><td>0.061</td>
+                                    <td class="best">89.35% (Optuna)</td><td>278,116</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Q2 Results -->
+        <section class="section">
+            <div class="container">
+                <h2>Q2: Adversarial Attack Results</h2>
+
+                <div class="results-grid" style="margin-bottom: 2rem;">
+                    <div class="result-card">
+                        <span class="result-value">93.75%</span>
+                        <div class="result-label">ResNet-18 Clean Acc</div>
+                        <div class="result-details">CIFAR-10, 30 epochs</div>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-value">45.45%</span>
+                        <div class="result-label">FGSM Scratch (ε=0.005)</div>
+                        <div class="result-details">Accuracy drop: −48.3%</div>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-value">49.83%</span>
+                        <div class="result-label">FGSM ART (ε=0.005)</div>
+                        <div class="result-details">Accuracy drop: −43.9%</div>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-value">98.98%</span>
+                        <div class="result-label">BIM Detector</div>
+                        <div class="result-details">Detection accuracy</div>
+                    </div>
+                </div>
+
+                <div class="table-section">
+                    <h3>FGSM Perturbation Strength vs Accuracy</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Epsilon</th>
+                                    <th>Clean Accuracy</th>
+                                    <th>FGSM Scratch</th>
+                                    <th>FGSM IBM ART</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>0.000</td><td>93.75%</td><td>93.75%</td><td>93.75%</td></tr>
+                                <tr><td>0.005</td><td>93.75%</td><td>45.45%</td><td>49.83%</td></tr>
+                                <tr><td>0.010</td><td>93.75%</td><td>27.27%</td><td>31.65%</td></tr>
+                                <tr><td>0.020</td><td>93.75%</td><td>18.80%</td><td>22.82%</td></tr>
+                                <tr><td>0.040</td><td>93.75%</td><td>14.92%</td><td>18.11%</td></tr>
+                                <tr><td>0.080</td><td>93.75%</td><td>12.01%</td><td>13.55%</td></tr>
+                                <tr><td>0.100</td><td>93.75%</td><td>11.55%</td><td>12.39%</td></tr>
+                                <tr><td>0.150</td><td>93.75%</td><td>10.32%</td><td>10.62%</td></tr>
+                                <tr><td>0.200</td><td>93.75%</td><td>10.19%</td><td>10.27%</td></tr>
+                                <tr><td>0.300</td><td>93.75%</td><td>10.28%</td><td>10.30%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-section" style="margin-top: 2rem;">
+                    <h3>Adversarial Detection Comparison</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Attack</th>
+                                    <th>Detection Accuracy</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1-Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PGD</td><td>50.85%</td>
+                                    <td>0.5909</td><td>0.0066</td><td>0.0131</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>BIM</td><td class="best">98.98%</td>
+                                    <td>0.9803</td><td>0.9990</td><td>0.9895</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Links -->
+        <section class="section">
+            <div class="container">
+                <h2>Resources</h2>
+                <div class="notebooks-grid">
+                    <a href="https://wandb.ai/b23cs1075-indian-institute-of-technology-/assignment5-vit-lora"
+                        target="_blank" class="notebook-card">
+                        <h4>📊 WandB — ViT LoRA</h4>
+                        <p>Training curves, gradient norms, class-wise accuracy histograms.</p>
+                        <span class="notebook-link">View Dashboard →</span>
+                    </a>
+                    <a href="https://wandb.ai/b23cs1075-indian-institute-of-technology-/assignment5-adversarial"
+                        target="_blank" class="notebook-card">
+                        <h4>📊 WandB — Adversarial</h4>
+                        <p>FGSM comparison, perturbation analysis, detector metrics.</p>
+                        <span class="notebook-link">View Dashboard →</span>
+                    </a>
+                    <a href="https://huggingface.co/NisargUpadhyay/b23cs1075-assignment5-vit-lora-best"
+                        target="_blank" class="notebook-card">
+                        <h4>🤗 HuggingFace</h4>
+                        <p>Best ViT-S LoRA model weights (Optuna: r=13, α=16).</p>
+                        <span class="notebook-link">View Model →</span>
+                    </a>
+                    <a href="https://github.com/NisargUpadhyayIITJ/MLOps-NisargUpadhyay-B23CS1075/tree/Assignment_5"
+                        target="_blank" class="notebook-card">
+                        <h4>📂 Source Code</h4>
+                        <p>Full source code, Dockerfile, and experiment scripts.</p>
+                        <span class="notebook-link">View Repository →</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Nisarg Upadhyay | B23CS1075 | IIT Jodhpur</p>
+        </div>
+    </footer>
+</body>
+
+</html>
