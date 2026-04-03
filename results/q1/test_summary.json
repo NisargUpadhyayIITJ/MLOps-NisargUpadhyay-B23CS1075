@@ -1,0 +1,112 @@
+[
+  {
+    "experiment": "baseline_no_lora",
+    "lora": false,
+    "rank": "N/A",
+    "alpha": "N/A",
+    "dropout": "N/A",
+    "test_loss": 0.7500405206680297,
+    "test_acc": 78.43,
+    "total_params": 21704164,
+    "trainable_params": 38500
+  },
+  {
+    "experiment": "lora_r2_a2_d0.1",
+    "lora": true,
+    "rank": 2,
+    "alpha": 2,
+    "dropout": 0.1,
+    "test_loss": 4.761742308044433,
+    "test_acc": 1.07,
+    "total_params": 21741028,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r2_a4_d0.1",
+    "lora": true,
+    "rank": 2,
+    "alpha": 4,
+    "dropout": 0.1,
+    "test_loss": 4.7790613372802735,
+    "test_acc": 0.8,
+    "total_params": 21741028,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r2_a8_d0.1",
+    "lora": true,
+    "rank": 2,
+    "alpha": 8,
+    "dropout": 0.1,
+    "test_loss": 4.764654508972168,
+    "test_acc": 1.18,
+    "total_params": 21741028,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r4_a2_d0.1",
+    "lora": true,
+    "rank": 4,
+    "alpha": 2,
+    "dropout": 0.1,
+    "test_loss": 4.808702314758301,
+    "test_acc": 0.78,
+    "total_params": 21777892,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r4_a4_d0.1",
+    "lora": true,
+    "rank": 4,
+    "alpha": 4,
+    "dropout": 0.1,
+    "test_loss": 4.751542124938965,
+    "test_acc": 1.15,
+    "total_params": 21777892,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r4_a8_d0.1",
+    "lora": true,
+    "rank": 4,
+    "alpha": 8,
+    "dropout": 0.1,
+    "test_loss": 4.810568489074707,
+    "test_acc": 0.71,
+    "total_params": 21777892,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r8_a2_d0.1",
+    "lora": true,
+    "rank": 8,
+    "alpha": 2,
+    "dropout": 0.1,
+    "test_loss": 4.761224110412598,
+    "test_acc": 1.34,
+    "total_params": 21851620,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r8_a4_d0.1",
+    "lora": true,
+    "rank": 8,
+    "alpha": 4,
+    "dropout": 0.1,
+    "test_loss": 4.800116416931153,
+    "test_acc": 0.97,
+    "total_params": 21851620,
+    "trainable_params": 0
+  },
+  {
+    "experiment": "lora_r8_a8_d0.1",
+    "lora": true,
+    "rank": 8,
+    "alpha": 8,
+    "dropout": 0.1,
+    "test_loss": 4.783938411712646,
+    "test_acc": 0.92,
+    "total_params": 21851620,
+    "trainable_params": 0
+  }
+]

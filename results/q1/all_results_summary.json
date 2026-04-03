@@ -1,0 +1,12 @@
+[
+  {
+    "experiment": "lora_r8_a8_d0.1",
+    "lora": true,
+    "rank": 8,
+    "alpha": 8,
+    "dropout": 0.1,
+    "trainable_params": 185956,
+    "test_acc": 88.74,
+    "best_val_acc": 88.82
+  }
+]

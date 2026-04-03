@@ -8,13 +8,8 @@ venv/
 env/
 .env/
 
-# Model artifacts (large files - don't commit to git)
-distilbert-reviews-genres/
-results/
-logs/
-eval_tmp/
-
 # Data files
+data/
 *.pickle
 *.gz
 
@@ -29,6 +24,15 @@ Thumbs.db
 # Jupyter checkpoints
 .ipynb_checkpoints/
 
-# Stored on Hugging Face Hub
-b23cs1075_ass_4_best_model.pth
-transformer_translation_final.pth
+# WandB local files
+wandb/
+
+# Intermediate weights (keep only best)
+weights/intermediate/
+
+# Optuna storage
+*.db
+optuna_studies/
+
+# Weights
+weights/*

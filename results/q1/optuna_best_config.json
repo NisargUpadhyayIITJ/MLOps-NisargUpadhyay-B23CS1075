@@ -1,0 +1,7 @@
+{
+  "rank": 13,
+  "alpha": 16,
+  "dropout": 0.06132411416714635,
+  "val_accuracy": 88.44,
+  "trial_number": 18
+}
